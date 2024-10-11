@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Event Registration</title>
+    <link rel="stylesheet" href="form.css" />
+  </head>
+  <body>
+    <div class="video-background">
+      <video autoplay muted loop>
+        <source src="background.mp4" type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
+    </div>
+    <div class="form-body">
+      <form id="registration-form">
+        <div class="heading">
+          <h2>REGISTRATION</h2>
+        </div>
+        <div class="input-fields">
+          <input
+            type="text"
+            name="name"
+            id="name"
+            placeholder="Name*"
+            required
+          />
+          <input
+            type="email"
+            name="email"
+            id="email"
+            placeholder="Email*"
+            required
+          />
+          <input
+            type="tel"
+            name="phnno"
+            id="phnno"
+            placeholder="Contact no.*"
+            required
+          />
+          <input
+            type="text"
+            name="college"
+            id="college"
+            placeholder="College*"
+            required
+          />
+          <input
+            type="text"
+            name="det"
+            placeholder="Year/Department/Section*"
+            id="yds"
+          />
+          <div class="events">
+            <label for="">Events</label>
+            <label>
+              <input type="checkbox" name="events" value="Event1" /> Event1
+            </label>
+            <br />
+            <label>
+              <input type="checkbox" name="events" value="Event2" /> Event2
+            </label>
+            <br />
+            <label>
+              <input type="checkbox" name="events" value="Event3" /> Event3
+            </label>
+          </div>
+          <input type="submit" value="Register" />
+        </div>
+      </form>
+    </div>
+
+    <script>
+      document
+        .querySelector("#registration-form")
+        .addEventListener("submit", register);
+      function register(e) {
+        e.preventDefault();
+
+        let username = document.getElementById("name").value.trim();
+        let email = document.getElementById("email").value.trim();
+        let phnno = document.getElementById("phnno").value.trim();
+        let college = document.getElementById("college").value.trim();
+        let yds = document.getElementById("yds").value.trim();
+
+        let checkboxes = document.querySelectorAll(
+          'input[name="events"]:checked'
+        );
+        let selectedEvents = Array.from(checkboxes).map((cb) => cb.value);
+
+        if (!username || !email || !phnno || !college || !yds) {
+          alert("All fields are required.");
+          return;
+        }
+
+        if (selectedEvents.length === 0) {
+          alert("Please select at least one event.");
+          return;
+        }
+
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailPattern.test(email)) {
+          alert("Please enter a valid email address.");
+          return;
+        }
+
+        let dict = {
+          name: username,
+          email: email,
+          contactno: phnno,
+          college: college,
+          yds: yds,
+          events: selectedEvents,
+        };
+
+        fetch("/create-user", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(dict),
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            console.log("Success:", data);
+            alert("Registered successfully!");
+
+            document.getElementById("name").value = "";
+            document.getElementById("email").value = "";
+            document.getElementById("phnno").value = "";
+            document.getElementById("college").value = "";
+            document.getElementById("yds").value = "";
+            checkboxes.forEach((cb) => (cb.checked = false));
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            alert("There was an error registering. Please try again."); // Optional error handling
+          });
+      }
+    </script>
+  </body>
+</html>
