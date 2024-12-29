@@ -35,7 +35,7 @@ const userSchema = new mongoose.Schema({
 const userModel = mongoose.model('participants', userSchema);
 
 // Endpoint to create user
-app.post('/create-user', (req, res) => {
+app.post('https://ndli-final.vercel.app/create-user', (req, res) => {
   const userData = req.body;
 
   userModel.create(userData)
