@@ -11,7 +11,7 @@ const MONGO_CONN = process.env.MONGO_CONN;
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use(cors({ origin: 'https://ndli-final-git-main-aswin0526s-projects.vercel.app' }));
 
 // Serve static files from the 'public' folder
 app.use(express.static(path.join(__dirname, '../public')));
@@ -35,7 +35,7 @@ const userSchema = new mongoose.Schema({
 const userModel = mongoose.model('participants', userSchema);
 
 // Endpoint to create user
-app.post('https://ndli-final-git-main-aswin0526s-projects.vercel.app/create-user', (req, res) => {
+app.post('/create-user', (req, res) => {
   const userData = req.body;
 
   userModel.create(userData)
